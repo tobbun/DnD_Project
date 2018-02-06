@@ -85,6 +85,60 @@ public class s_Die : MonoBehaviour {
         
     }
 
+    bool Cocked(){
+
+        bool isItCocked = false;
+
+
+        switch(dieType){
+            case DieType.d6:
+                
+                int totalSidesThatAreAtTheSameLevel = 0;
+                //1 & 6
+                //2 & 5
+                //3 & 4
+
+                //check if the y value is the same on at least two
+                Debug.Log("1 is "+ sides[0].position.y + " and 6 is " + sides[5].position.y);
+                Debug.Log("2 is "+ sides[1].position.y + " and 5 is " + sides[4].position.y);
+                Debug.Log("3 is "+ sides[2].position.y + " and 4 is " + sides[3].position.y);
+
+
+                if(sides[0].position.y == sides[5].position.y)
+                {
+
+            
+                    totalSidesThatAreAtTheSameLevel++;
+                }
+
+                if(sides[1].position.y == sides[4].position.y){
+                    totalSidesThatAreAtTheSameLevel++;
+                }
+
+                if(sides[2].position.y == sides[3].position.y){
+                    totalSidesThatAreAtTheSameLevel++;
+                }
+                    Debug.Log("A total of "+totalSidesThatAreAtTheSameLevel+" pairs of sides are at the same height.");
+                if(totalSidesThatAreAtTheSameLevel >= 2){
+                    Debug.Log("This die roll is acceptable!");
+                    isItCocked = false;
+                } else if (totalSidesThatAreAtTheSameLevel < 2){
+                    Debug.Log("This die is Swedish!");
+                    isItCocked = true;
+                }
+                break;
+            
+                
+
+            default:
+                break;
+        }
+
+        
+
+        return isItCocked;
+    }
+
     RectTransform currentTop; //current top side
 
     void ResultGet()
@@ -108,7 +162,8 @@ public class s_Die : MonoBehaviour {
     {
         //write method to check if die is lying flat on the group (one pair of two sides must have the same xz coordinates)
         //if return true, resultget
-        ResultGet();
+        if(!Cocked()){ResultGet();}
+        
 
         
 
@@ -160,7 +215,14 @@ public class s_Die : MonoBehaviour {
         Debug.DrawRay(gameObject.transform.position, direction, Color.blue, 0f, true);
         held = true;
         resolved = false;
+
+        if(Input.GetKey(KeyCode.R)||Input.GetMouseButton(0)){
+            RandomRot();
+        }
+
+        //SemiRandomRot(hand);
         
+
         /*
         float travel = Vector3.Distance(gameObject.transform.position, hand);
         float cov = (Time.time - startTime) * speed;
@@ -170,6 +232,28 @@ public class s_Die : MonoBehaviour {
 
         Debug.Log("Gathering");*/
 
+    }
+
+    public void RandomRot(){
+        gameObject.transform.rotation = Random.rotation;
+    }
+
+    float semiRandomRotCountDownReset = 100;
+    float semiRandomRotCountDown = 100;
+    void SemiRandomRot(Vector3 hand) //with this I will make the die run a randomRot if it Held == true && velocity over a certain parameter where the
+    {
+        if(!held){
+            semiRandomRotCountDown = semiRandomRotCountDownReset;
+            return;
+        }
+
+        if(held){
+            semiRandomRotCountDown = semiRandomRotCountDown / Vector3.Distance(gameObject.transform.position, hand);
+            semiRandomRotCountDown = semiRandomRotCountDown - 1;
+            if(semiRandomRotCountDown <= 0){
+                RandomRot();
+            }
+        }
     }
 
 //CLEANUP SECTION

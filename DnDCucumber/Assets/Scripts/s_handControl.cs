@@ -10,7 +10,6 @@ public class s_handControl : MonoBehaviour {
     public float speed = 10;
     Vector3 pos;
 
-
     public List<GameObject> dice;
 
     public s_User user;
@@ -24,7 +23,10 @@ public class s_handControl : MonoBehaviour {
 
     public Transform handPoint;
 
+    public Transform spawnPoint;
     public GameObject die;
+
+    public GameObject[] dieType;
 
     public Text DieCount;
 
@@ -76,7 +78,7 @@ public class s_handControl : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
-            SpawnD6(handPoint);
+            SpawnD6(1);
         }
 
         DieCount.text = "You have "+dice.Count+" dice.";
@@ -85,27 +87,14 @@ public class s_handControl : MonoBehaviour {
         
     }   
 
+
     void LateUpdate()
     {
-        if (Input.GetMouseButton(1))
-        {
-            foreach (GameObject Die in dice)
-            {
-                
-                /*
-                rbDie = Die.GetComponent<Rigidbody>();
-
-                Vector3 direction = (Die.transform.position + handPoint.transform.position);
-                rbDie.AddForce(direction * speed * Time.deltaTime);
-                */
-                Die.GetComponent<s_Die>().GatherUp(handPoint.transform.position);
-
-            }
-        }
+        Gather();
     }
 
 // SPAWNING SECTION
-    void SpawnAsCube(Transform SpawnPoint){
+    void SpawnAsCube(Transform SpawnPoint, GameObject die){
 
         int axisLength = FindTheCubeRoot(diceToSpawn.value);
         
@@ -141,14 +130,29 @@ public class s_handControl : MonoBehaviour {
     }
 
 
-    public void SpawnD4(Transform SpawnPoint)
+    public void SpawnD4(int dieIndex)
     {
-        //
-        Debug.Log("Die type not yet implemented.");
+        rot = new Quaternion (0,0,0,1);
+        
+        
+
+        if(shallWeCubeTheFuckers.isOn){
+            SpawnAsCube(spawnPoint, dieType[dieIndex]);
+        }
+        else {
+        
+            for (int i = 0; i < diceToSpawn.value; i++)
+            {
+                if(rotOrNot.isOn){rot = Random.rotation;}
+                dice.Add(Instantiate(dieType[dieIndex], spawnPoint.position, rot));
+                //make list of s_die components?
+            }
+        
+        }
     }
 
     Quaternion rot;
-    public void SpawnD6(Transform SpawnPoint)
+    public void SpawnD6(int dieIndex)
     {
 
         rot = new Quaternion (0,0,0,1);
@@ -156,44 +160,81 @@ public class s_handControl : MonoBehaviour {
         
 
         if(shallWeCubeTheFuckers.isOn){
-            SpawnAsCube(SpawnPoint);
+            SpawnAsCube(spawnPoint, dieType[dieIndex]);
         }
         else {
         
             for (int i = 0; i < diceToSpawn.value; i++)
             {
                 if(rotOrNot.isOn){rot = Random.rotation;}
-                dice.Add(Instantiate(die, SpawnPoint.position, rot));
+                dice.Add(Instantiate(dieType[dieIndex], spawnPoint.position, rot));
                 //make list of s_die components?
             }
         
         }
     }
 
-    public void SpawnD8(Transform SpawnPoint)
+    public void SpawnD8(int dieIndex)
     {
         Debug.Log("Die type not yet implemented.");
     }
 
-    public void SpawnD10(Transform SpawnPoint)
+    public void SpawnD10(int dieIndex)
     {
         Debug.Log("Die type not yet implemented.");
     }
 
-    public void SpawnD12(Transform SpawnPoint)
+    public void SpawnD12(int dieIndex)
     {
        Debug.Log("Die type not yet implemented.");     
     }
 
-    public void SpawnD20(Transform SpawnPoint)
+    public void SpawnD20(int dieIndex)
     {
-        Debug.Log("Die type not yet implemented.");
+       rot = new Quaternion (0,0,0,1);
+        
+        
+
+        if(shallWeCubeTheFuckers.isOn){
+            SpawnAsCube(spawnPoint, dieType[dieIndex]);
+        }
+        else {
+        
+            for (int i = 0; i < diceToSpawn.value; i++)
+            {
+                if(rotOrNot.isOn){rot = Random.rotation;}
+                dice.Add(Instantiate(dieType[dieIndex], spawnPoint.position, rot));
+                //make list of s_die components?
+            }
+        
+        }
     }
 
-
+/*
     public void SpawnDie()
     {
         SpawnD6(handPoint);
+    }
+*/
+
+//HANDLING
+
+    void Gather(){
+        if (Input.GetMouseButton(1))
+        {
+            foreach (GameObject Die in dice)
+            {
+                
+                /*
+                rbDie = Die.GetComponent<Rigidbody>();
+
+                Vector3 direction = (Die.transform.position + handPoint.transform.position);
+                rbDie.AddForce(direction * speed * Time.deltaTime);
+                */
+                Die.GetComponent<s_Die>().GatherUp(handPoint.transform.position);
+
+            }
+        }
     }
 
 //CLEANUP SECTION
